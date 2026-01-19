@@ -11,14 +11,6 @@ cd yay
 makepkg -si
 
 
-## remove unsed apps 
-sudo pacman -Rns firefox
-
-
-## install window apps
-
-yay -S microsoft-edge-stable-bin  google-chrome visual-studio-code-bin discord steam mouse_m908 beekeeper-studio-bin insomnia 
-
 ## install cli apps
 
 yay -S exa bat github-cli vim docker docker-compose
@@ -31,7 +23,7 @@ yay -S exa bat github-cli vim docker docker-compose
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 ## install nvm 
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
 # reload zsh to path update 
 . ~/.zshrc
