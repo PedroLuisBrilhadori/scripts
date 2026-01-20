@@ -11,7 +11,7 @@ cd yay
 makepkg -si
 
 ## install gui apps 
-yay -S google-chrome visual-studio-code-bin discord
+yay -S google-chrome visual-studio-code-bin discord datagrip bruno
 
 ## install cli apps
 
