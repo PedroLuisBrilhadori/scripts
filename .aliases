@@ -1,11 +1,6 @@
 # apps 
-alias explorer="dolphin"
 alias ls="exa --icons --git"
 alias cat="bat"
-alias mouse="mouse_m908"
-alias obs="prime-run flatpak run com.obsproject.Studio"
-alias vim="lvim"
-alias venv="source ./venv/bin/activate"
 
 
 # folders
@@ -13,7 +8,6 @@ alias prog="cd ~/programing"
 
 # commands
 alias reload-zsh=". ~/.zshrc"
-alias start-network="sudo systemctl restart NetworkManager"
 
 # configs edit
 alias edit-zshrc="vim ~/.zshrc; reload-zsh"

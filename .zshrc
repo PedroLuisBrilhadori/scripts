@@ -70,7 +70,7 @@ ZSH_THEME="jonathan"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git zsh-autocomplete)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -103,9 +103,3 @@ source $ZSH/oh-my-zsh.sh
 . ~/.aliases
 . ~/.paths
 
-
-# Load Git completion
-zstyle ':completion:*:*:git:*' script ~/.zsh/git-completion.bash
-fpath=(~/.zsh $fpath)
-
-autoload -Uz compinit && compinit
