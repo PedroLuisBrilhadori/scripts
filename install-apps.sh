@@ -10,6 +10,8 @@ cd yay
 # build and install yay
 makepkg -si
 
+## install gui apps 
+yay -S google-chrome visual-studio-code-bin discord
 
 ## install cli apps
 
