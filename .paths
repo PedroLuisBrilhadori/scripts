@@ -11,3 +11,8 @@ export PATH=~/.config/composer/vendor/bin/:$PATH
 
 # cargo packages
 export PATH=~/.cargo/bin:$PATH 
+
+# pg-16
+export PATH=/opt/postgresql16/bin:$PATH
+
+

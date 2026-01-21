@@ -1,0 +1,147 @@
+#!/usr/bin/env zsh
+
+# Cores para output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Valores padrão
+DB_HOST="localhost"
+DB_USER="postgres"
+
+# Função para exibir help
+show_help() {
+    echo -e "${BLUE}Uso: dump-database [OPÇÕES]${NC}"
+    echo ""
+    echo "Opções:"
+    echo "  -h HOST    Especifica o host do PostgreSQL (padrão: localhost)"
+    echo "  -u USER    Especifica o usuário do PostgreSQL (padrão: postgres)"
+    echo "  --help     Exibe esta mensagem de ajuda"
+    echo ""
+    echo "Exemplos:"
+    echo "  ./dump-database"
+    echo "  ./dump-database -h 192.168.1.100"
+    echo "  ./dump-database -h db.example.com -u meu_usuario"
+    exit 0
+}
+
+# Parseamento de argumentos
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--host)
+            DB_HOST="$2"
+            shift 2
+            ;;
+        -u|--user)
+            DB_USER="$2"
+            shift 2
+            ;;
+        --help)
+            show_help
+            ;;
+        *)
+            echo -e "${RED}Erro: Opção desconhecida '$1'${NC}"
+            show_help
+            ;;
+    esac
+done
+
+# Exibir configuração
+echo -e "${BLUE}=== Script de Dump PostgreSQL ===${NC}"
+echo -e "Host: ${GREEN}$DB_HOST${NC}"
+echo -e "Usuário: ${GREEN}$DB_USER${NC}"
+echo ""
+
+# Pedir senha
+echo -n "Senha do PostgreSQL: "
+read -s DB_PASSWORD
+echo ""
+echo ""
+
+# Exportar senha para uso com pg_dump/psql
+export PGPASSWORD="$DB_PASSWORD"
+
+# Testar conexão
+echo -e "${YELLOW}Testando conexão com o banco de dados...${NC}"
+if ! psql -h "$DB_HOST" -U "$DB_USER" -d "postgres" -c "SELECT 1;" &>/dev/null; then
+    echo -e "${RED}Erro: Não foi possível conectar ao PostgreSQL${NC}"
+    echo "Verifique:"
+    echo "  - Host e usuário estão corretos"
+    echo "  - Senha está correta"
+    echo "  - Servidor PostgreSQL está acessível"
+    unset PGPASSWORD
+    exit 1
+fi
+echo -e "${GREEN}✓ Conexão estabelecida com sucesso${NC}"
+echo ""
+
+# Listar bancos de dados disponíveis
+echo -e "${YELLOW}Listando bancos de dados disponíveis...${NC}"
+echo ""
+
+# Obter lista de bancos (excluindo system databases e o banco postgres)
+DATABASES=$(psql -h "$DB_HOST" -U "$DB_USER" -d "postgres" -t -c \
+    "SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' ORDER BY datname;" 2>/dev/null)
+
+if [[ -z "$DATABASES" ]]; then
+    echo -e "${RED}Erro: Não foram encontrados bancos de dados acessíveis${NC}"
+    unset PGPASSWORD
+    exit 1
+fi
+
+# Converter array e numerar bancos
+i=1
+declare -a DB_ARRAY
+while IFS= read -r db; do
+    if [[ -n "$db" ]]; then
+        db=$(echo "$db" | xargs) # Remover espaços em branco
+        echo -e "${BLUE}) $i${NC} - ${GREEN}$db${NC}"
+        DB_ARRAY+=("$db")
+        ((i++))
+    fi
+done <<< "$DATABASES"
+
+echo ""
+echo -n "Digite o número do banco de dados para fazer dump: "
+read DB_SELECTION
+
+# Validar seleção
+if ! [[ "$DB_SELECTION" =~ ^[0-9]+$ ]] || [[ "$DB_SELECTION" -lt 1 ]] || [[ "$DB_SELECTION" -gt ${#DB_ARRAY[@]} ]]; then
+    echo -e "${RED}Erro: Seleção inválida${NC}"
+    unset PGPASSWORD
+    exit 1
+fi
+
+# Obter nome do banco selecionado
+SELECTED_DB="${DB_ARRAY[$DB_SELECTION]}"
+echo -e "Banco selecionado: ${GREEN}$SELECTED_DB${NC}"
+echo ""
+
+# Gerar nome do arquivo com timestamp
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+OUTPUT_FILE="${SELECTED_DB}_${TIMESTAMP}.sql"
+
+# Realizar dump
+echo -e "${YELLOW}Iniciando dump do banco '$SELECTED_DB'...${NC}"
+echo -e "Arquivo de saída: ${BLUE}$OUTPUT_FILE${NC}"
+echo ""
+
+if pg_dump -h "$DB_HOST" -U "$DB_USER" -d "$SELECTED_DB" > "$OUTPUT_FILE" 2>&1; then
+    # Obter tamanho do arquivo
+    FILE_SIZE=$(du -h "$OUTPUT_FILE" | cut -f1)
+    echo ""
+    echo -e "${GREEN}✓ Dump concluído com sucesso!${NC}"
+    echo -e "Arquivo criado: ${BLUE}$OUTPUT_FILE${NC}"
+    echo -e "Tamanho: ${GREEN}$FILE_SIZE${NC}"
+else
+    echo ""
+    echo -e "${RED}Erro ao realizar dump${NC}"
+    rm -f "$OUTPUT_FILE"
+    unset PGPASSWORD
+    exit 1
+fi
+
+# Limpar variável de ambiente
+unset PGPASSWORD
