@@ -18,3 +18,5 @@ alias edit-paths="vim ~/.paths; reload-zsh"
 # unidocs processors 
 alias sleep-processors="node ~/programing/sleep-processors stop"
 alias start-processors="node ~/programing/sleep-processors start"
+
+alias logs-cron="journalctl -u cronie"
