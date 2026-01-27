@@ -16,3 +16,5 @@ export PATH=~/.cargo/bin:$PATH
 export PATH=/opt/postgresql16/bin:$PATH
 
 
+
+export GOOGLE_APPLICATION_CREDENTIALS=~/programing/sleep-processors/gpc-service-account.json

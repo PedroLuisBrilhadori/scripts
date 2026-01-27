@@ -1,6 +1,7 @@
 # apps 
 alias ls="exa --icons --git"
 alias cat="bat"
+alias venv="source ./venv/bin/activate"
 
 
 # folders
@@ -13,3 +14,7 @@ alias reload-zsh=". ~/.zshrc"
 alias edit-zshrc="vim ~/.zshrc; reload-zsh"
 alias edit-aliases="vim ~/.aliases; reload-zsh"
 alias edit-paths="vim ~/.paths; reload-zsh"
+
+# unidocs processors 
+alias sleep-processors="node ~/programing/sleep-processors stop"
+alias start-processors="node ~/programing/sleep-processors start"
