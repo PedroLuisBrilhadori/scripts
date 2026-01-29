@@ -1,0 +1,3 @@
+cp ~/.aliases ~/scripts/
+cp ~/.paths ~/scripts/
+cp ~/.zshrc ~/scripts/

@@ -19,4 +19,4 @@ alias edit-paths="vim ~/.paths; reload-zsh"
 alias sleep-processors="node ~/programing/sleep-processors stop"
 alias start-processors="node ~/programing/sleep-processors start"
 
-alias logs-cron="journalctl -u cronie"
+alias logs-cron="sudo journalctl -u cronie.service -n 10"
